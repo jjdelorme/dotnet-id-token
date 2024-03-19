@@ -1,5 +1,4 @@
-﻿using Google.Api;
-using Google.Apis.Auth.OAuth2;
+﻿using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Iam.Credentials.V1;
 
 /* This code is equivalent to the following JavaScript code:
@@ -12,19 +11,17 @@ using Google.Cloud.Iam.Credentials.V1;
 * The documentation at cloud.google.com/docs/authentication/get-id-token should bee updated to include C# sample.
 */
 if (args.Length != 2)
-{
-    Console.WriteLine("Usage: dotnet run <cloud-run url> <oidc|sa>");
-    return;
-}
+    throw new Exception("Usage: dotnet run <cloud-run url> <oidc|sa>");
 
 string url = args[0];
 string requestType = args[1];
-string accessToken;
 
-if (requestType == "oidc")
-    accessToken = await GetAccessTokenFromOidc(url);
-else
-    accessToken = await GetIdTokenFromServiceAccount(url);
+string accessToken = requestType switch
+{
+    "oidc" => await GetAccessTokenFromOidc(url),
+    "sa" => await GetIdTokenFromServiceAccount(url),
+    _ => throw new Exception("Invalid request type.")
+};
 
 var client = new HttpClient();
 client.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
