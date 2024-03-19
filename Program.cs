@@ -18,9 +18,10 @@ if (args.Length != 2)
 }
 
 string url = args[0];
-string accessToken = args[1];
+string requestType = args[1];
+string accessToken;
 
-if (accessToken == "oidc")
+if (requestType == "oidc")
     accessToken = await GetAccessTokenFromOidc(url);
 else
     accessToken = await GetIdTokenFromServiceAccount(url);
