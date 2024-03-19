@@ -23,7 +23,7 @@ string accessToken = args[1];
 if (accessToken == "oidc")
     accessToken = await GetAccessTokenFromOidc(url);
 else
-    accessToken = await GetAccessTokenFromServiceAccount(url);
+    accessToken = await GetIdTokenFromServiceAccount(url);
 
 var client = new HttpClient();
 client.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
@@ -53,7 +53,7 @@ async Task<string> GetAccessTokenFromOidc(string url)
 /// <summary>
 /// Gets an HTTP client with an ID token set.
 /// </summary>
-async Task<string> GetAccessTokenFromServiceAccount(string url) 
+async Task<string> GetIdTokenFromServiceAccount(string url) 
 {
     // Get default Google credential
     var credential = await GoogleCredential.GetApplicationDefaultAsync()
