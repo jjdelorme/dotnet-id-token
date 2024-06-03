@@ -54,7 +54,7 @@ info: Microsoft.Hosting.Lifetime[0]
 info: Microsoft.Hosting.Lifetime[0]
       Hosting environment: Development
 info: Microsoft.Hosting.Lifetime[0]
-      Content root path: /home/jasondel/dev/id-token
+      Content root path: /home/user/dev/id-token
 ```
 
 If all goes according to plan, your AMAZING result should look like this in your browser:
