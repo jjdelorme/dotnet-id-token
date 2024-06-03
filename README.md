@@ -1,6 +1,6 @@
 # .NET Get ID Token Sample
 
-This Google C# sample demonstrates authenticated service to service calls using an ID token with Cloud Run.  Service A (this service) -> Service B (Authenticated).
+This Google C# sample demonstrates authenticated service to service calls using an ID token with Cloud Run.  "Service A" (this service) -> "Service B" (Authenticated).
 
 ## Git Tags
 
@@ -8,6 +8,14 @@ This repo is setup with 2 tags to follow along:
 
 * `start` is without authentication
 * `end` is with authentication
+
+## Deploy "Service B"
+
+This sample application uses the [helloworld test container](https://github.com/testcontainers/helloworld) image.  Deploy this as a Cloud Run service in your GCP Project:
+
+```bash
+gcloud run deploy helloworld --image testcontainers/helloworld --region us-central1
+```
 
 ## App Settings
 
