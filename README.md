@@ -41,8 +41,22 @@ Google's [Best practices for using service accounts](https://cloud.google.com/ia
     export GOOGLE_APPLICATION_CREDENTIALS=$HOME/.config/gcloud/application_default_credentials.json
     ```
 
-## Success
+## Running
 
-If all goes according to plan, your AMAZING result should look like this:
+Start the application with `dotnet run` from your cli with [.NET 8 installed](https://dotnet.microsoft.com/en-us/download):
+
+
+```
+info: Microsoft.Hosting.Lifetime[14]
+      Now listening on: http://localhost:5000
+info: Microsoft.Hosting.Lifetime[0]
+      Application started. Press Ctrl+C to shut down.
+info: Microsoft.Hosting.Lifetime[0]
+      Hosting environment: Development
+info: Microsoft.Hosting.Lifetime[0]
+      Content root path: /home/jasondel/dev/id-token
+```
+
+If all goes according to plan, your AMAZING result should look like this in your browser:
 
 ![Image description](success.png)
