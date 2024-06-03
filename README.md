@@ -5,4 +5,8 @@ This Google C# sample demonstrates authenticated service to service calls using 
 ```json
   "ServiceUrl": "https://helloworld-XXXXXX-uc.a.run.app"
 ```
+## Git Tags
+
+`start` is without authentication
+`end` is with authentication
 
