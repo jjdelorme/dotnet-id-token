@@ -40,3 +40,9 @@ Google's [Best practices for using service accounts](https://cloud.google.com/ia
 
     export GOOGLE_APPLICATION_CREDENTIALS=$HOME/.config/gcloud/application_default_credentials.json
     ```
+
+## Success
+
+If all goes according to plan, your AMAZING result should look like this:
+
+![Image description](success.png)
