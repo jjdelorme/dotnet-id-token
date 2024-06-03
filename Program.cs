@@ -1,85 +1,30 @@
-﻿using Google.Apis.Auth.OAuth2;
-using Google.Cloud.Iam.Credentials.V1;
+﻿
+const string SERVICE_CLIENT = "ServiceClient";
 
-/* This code is equivalent to the following JavaScript code:
+var builder = WebApplication.CreateBuilder(args);
 
-    import {GoogleAuth} from 'google-auth-library';
-    const auth = new GoogleAuth();
-    const url = 'https://helloworld-xxxxx-uc.a.run.app';
-    const client = await auth.getIdTokenClient(url);
+string serviceUrl = builder.Configuration["ServiceUrl"] ?? 
+    throw new Exception("ServiceUrl not found");
 
-* The documentation at cloud.google.com/docs/authentication/get-id-token should bee updated to include C# sample.
-*/
-if (args.Length != 2)
-    throw new Exception("Usage: dotnet run <cloud-run url> <oidc|sa>");
-
-string url = args[0];
-string requestType = args[1];
-
-string accessToken = requestType switch
+builder.Services.AddHttpClient(SERVICE_CLIENT, client =>
 {
-    "oidc" => await GetAccessTokenFromOidc(url),
-    "sa" => await GetIdTokenFromServiceAccount(url),
-    _ => throw new Exception("Invalid request type.")
-};
+    client.BaseAddress = new Uri(serviceUrl);
+});
 
-var client = new HttpClient();
-client.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
+var app = builder.Build();
 
-using var response = await client.GetAsync(url);
-
-Console.WriteLine(await response.Content.ReadAsStringAsync());
-
-
-/// <summary>
-/// Get the OIDC access token from the service account via Application Default Credentials
-/// </summary>
-/// <remarks>Based on: https://cloud.google.com/run/docs/tutorials/secure-services#run_secure_invoker-dotnet</remarks>
-async Task<string> GetAccessTokenFromOidc(string url)
-{    
-    var credential = await GoogleCredential.GetApplicationDefaultAsync()
-        .ConfigureAwait(false);
+app.MapGet("/", async (IHttpClientFactory clientFactory) => 
+{
+    var client = clientFactory.CreateClient(SERVICE_CLIENT);
+    using var response = await client.GetAsync("/ping");
     
-    var token = await credential.GetOidcTokenAsync(OidcTokenOptions.FromTargetAudience(url))
-        .ConfigureAwait(false);
-    
-    string accessToken = await token.GetAccessTokenAsync().ConfigureAwait(false);
+    if (!response.IsSuccessStatusCode)
+    { 
+        return Results.BadRequest($"The response was: {response.ReasonPhrase}");
+    }
 
-    return accessToken;
-}
+    string content = await response.Content.ReadAsStringAsync();    
+    return Results.Ok($"The response was: {content}");    
+});
 
-/// <summary>
-/// Gets an HTTP client with an ID token set.
-/// </summary>
-async Task<string> GetIdTokenFromServiceAccount(string url) 
-{
-    // Get default Google credential
-    var credential = await GoogleCredential.GetApplicationDefaultAsync()
-        .ConfigureAwait(false);
-
-    // Get the underlying ServiceAccountCredential
-    var serviceAccount = credential.UnderlyingCredential as ServiceAccountCredential;
-
-    if(serviceAccount == null)
-        throw new Exception("Could not get ServiceAccountCredential from ApplicationDefaultCredentials");
- 
-    var idToken = await GetIdTokenAsync(url, serviceAccount.Id);
-
-    return idToken;
-}
-
-/// <summary>
-/// Gets the ID Token scoped to a url with a service account ID (usually the email address).
-/// </summary>
-async Task<string> GetIdTokenAsync(string url, string serviceAccountId)
-{
-    // Create IAMCredentialsClient
-    var client = IAMCredentialsClient.Create();
-
-    // Generate ID token
-    var tokenResponse = await client.GenerateIdTokenAsync(serviceAccountId, null, url, true)
-            .ConfigureAwait(false);
-
-    return tokenResponse.Token;
-}
-
+app.Run();
