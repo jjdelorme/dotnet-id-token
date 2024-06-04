@@ -41,13 +41,23 @@ Google's [Best practices for using service accounts](https://cloud.google.com/ia
 1. Set your service account email, for example.
     ```bash
     PROJECT_ID=$(gcloud config get project)
-    
+
     export SERVICE_ACCOUNT=cr-id-token@$PROJECT_ID.iam.gserviceaccount.com
     ```
 
-1. Ensure that your **service account** has the `roles/run.invoker` role in order to be able to invoke another Cloud Run service.
+1. Create your service account:
+      ```bash
+      gcloud iam service-accounts create $SERVICE_ACCOUNT --project $PROJECT_ID
+      ```
 
-1. Ensure that your **user account** that you login with has the `Service Account OpenID Connect Identity Token Creator` role.  **NOTE** Even if you are an administrator in your GCP Project, you will need this role or similar role which has the `iam.serviceAccounts.getOpenIdToken` permission.
+1. Ensure that your **service account** has the `roles/run.invoker` role in order to be able to invoke another Cloud Run service.
+      ```bash
+      gcloud projects add-iam-policy-binding $PROJECT_ID \
+            --member="serviceAccount:$SERVICE_ACCOUNT" \
+            --role="roles/run.invoker"
+      ```
+
+1. Ensure that YOUR **user account** that you login interactively in the console has the `Service Account OpenID Connect Identity Token Creator` role.  **NOTE** Even if you are an administrator in your GCP Project, you will need this role or similar role which has the `iam.serviceAccounts.getOpenIdToken` permission.
 
 1. Login using Service Account Impersonation with [Application Default Credentials](https://cloud.google.com/docs/authentication/provide-credentials-adc):
 
