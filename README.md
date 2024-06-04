@@ -4,10 +4,10 @@ This Google C# sample demonstrates authenticated service to service calls using 
 
 ## Git Tags
 
-This repo is setup with 2 tags to follow along:
+This repo is setup with 2 branches to follow along:
 
-* `start` is without authentication
-* `end` is with authentication
+* `main` is the completed application with authentiation
+* `start` represents the simple application before adding the authentication
 
 ## Deploy "Service B"
 
