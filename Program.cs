@@ -20,6 +20,7 @@ var app = builder.Build();
 app.MapGet("/", async (IHttpClientFactory clientFactory) => 
 {
     var client = clientFactory.CreateClient(SERVICE_CLIENT);
+
     using var response = await client.GetAsync("/ping");
     
     if (!response.IsSuccessStatusCode)
@@ -28,6 +29,7 @@ app.MapGet("/", async (IHttpClientFactory clientFactory) =>
     }
 
     string content = await response.Content.ReadAsStringAsync();    
+    
     return Results.Ok($"The response was: {content}");    
 });
 
