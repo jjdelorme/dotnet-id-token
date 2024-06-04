@@ -38,9 +38,11 @@ Add the following entry to your `appsettings.json` file for the location of Serv
 
 Google's [Best practices for using service accounts](https://cloud.google.com/iam/docs/best-practices-service-accounts#using_service_accounts) suggests using [service account impersonation](https://cloud.google.com/docs/authentication/use-service-account-impersonation) when developing locally.
 
-1. Set your service account email, for example: 
+1. Set your service account email, for example.
     ```bash
-    export SERVICE_ACCT_EMAIL=serviceaccount@your-project.iam.gserviceaccount.com
+    PROJECT_ID=$(gcloud config get project)
+    
+    export SERVICE_ACCOUNT=cr-id-token@$PROJECT_ID.iam.gserviceaccount.com
     ```
 
 1. Ensure that your **service account** has the `roles/run.invoker` role in order to be able to invoke another Cloud Run service.
@@ -50,12 +52,12 @@ Google's [Best practices for using service accounts](https://cloud.google.com/ia
 1. Login using Service Account Impersonation with [Application Default Credentials](https://cloud.google.com/docs/authentication/provide-credentials-adc):
 
     ```bash
-    gcloud auth application-default login --impersonate-service-account $SERVICE_ACCT_EMAIL
+    gcloud auth application-default login --impersonate-service-account $SERVICE_ACCOUNT
 
     export GOOGLE_APPLICATION_CREDENTIALS=$HOME/.config/gcloud/application_default_credentials.json
     ```
 
-## Running
+## Running Locally
 
 Start the application with `dotnet run` from your cli with [.NET 8 installed](https://dotnet.microsoft.com/en-us/download):
 
@@ -74,3 +76,11 @@ info: Microsoft.Hosting.Lifetime[0]
 If all goes according to plan, your AMAZING result should look like this in your browser:
 
 ![Image description](success.png)
+
+## Deploying to Cloud Run using Cloud Build
+
+The following script automates creating a Service Account with the necessary permissions (`roles/run.invoker`) and deploying the application to Cloud Run to run as that user.
+
+```bash
+./build.sh
+```
