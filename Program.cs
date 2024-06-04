@@ -1,4 +1,4 @@
-﻿const string SERVICE_CLIENT = "ServiceClient";
+﻿﻿const string SERVICE_CLIENT = "ServiceClient";
 
 var builder = WebApplication.CreateBuilder(args);
 

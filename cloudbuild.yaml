@@ -1,0 +1,17 @@
+steps:
+  - name: gcr.io/cloud-builders/docker
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/id-token', '.']
+  - name: gcr.io/cloud-builders/docker
+    args: ['push', 'gcr.io/$PROJECT_ID/id-token']
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    entrypoint: gcloud
+    args: [
+      'run',
+      'deploy',
+      'id-token',
+      '--image', 'gcr.io/$PROJECT_ID/id-token',
+      '--region', 'us-central1',
+      '--allow-unauthenticated',
+      '--service-account', '$_SERVICE_ACCOUNT',
+      '--set-env-vars', 'ServiceUrl=$_SERVICE_URL',
+    ]
