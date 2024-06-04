@@ -8,14 +8,13 @@ var builder = WebApplication.CreateBuilder(args);
 string serviceUrl = builder.Configuration["ServiceUrl"] ?? 
     throw new Exception("ServiceUrl not found");
 
-// Get ID token 
-string idToken = await GetIdTokenAsync(serviceUrl);
+// Get ID token that will automatically refresh
+OidcToken token = await GetIdTokenAsync(serviceUrl);
 
 // Configure HTTP client
 builder.Services.AddHttpClient(SERVICE_CLIENT, client =>
 {
     client.BaseAddress = new Uri(serviceUrl);
-    client.DefaultRequestHeaders.Add("Authorization", $"Bearer {idToken}");
 });
 
 var app = builder.Build();
@@ -23,7 +22,12 @@ var app = builder.Build();
 // Define the route
 app.MapGet("/", async (IHttpClientFactory clientFactory) => 
 {
+    // Despite the method being called AccessToken this is an IdToken
+    var idToken = await token.GetAccessTokenAsync().ConfigureAwait(false);
+
     var client = clientFactory.CreateClient(SERVICE_CLIENT);
+    client.DefaultRequestHeaders.Add("Authorization", $"Bearer {idToken}");
+
     using var response = await client.GetAsync("/ping");
     
     if (!response.IsSuccessStatusCode)
@@ -32,15 +36,20 @@ app.MapGet("/", async (IHttpClientFactory clientFactory) =>
     }
 
     string content = await response.Content.ReadAsStringAsync();    
+    
     return Results.Ok($"The response was: {content}");    
 });
 
 app.Run();
 
 /// <summary>
-/// Gets an ID token from Application Default Credentials.
+/// Gets a token from Application Default Credentials.
 /// </summary>
-static async Task<string> GetIdTokenAsync(string url)
+/// <remarks>
+/// The GoogleCredential class handles token refresh automatically when you call 
+/// GetOidcTokenAsync again. You don't need to manually manage the refresh process.
+/// </remarks>
+static async Task<OidcToken> GetIdTokenAsync(string url)
 {
     // Get default Google credential
     var credential = await GoogleCredential.GetApplicationDefaultAsync()
@@ -49,8 +58,5 @@ static async Task<string> GetIdTokenAsync(string url)
     var token = await credential.GetOidcTokenAsync(OidcTokenOptions.FromTargetAudience(url))
         .ConfigureAwait(false);
 
-    // Despite the method being called AccessToken this is an IdToken
-    var idToken = await token.GetAccessTokenAsync().ConfigureAwait(false);
-
-    return idToken;
+    return token;
 }
