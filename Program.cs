@@ -4,11 +4,14 @@ const string SERVICE_CLIENT = "ServiceClient";
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Get service URL from configuration
 string serviceUrl = builder.Configuration["ServiceUrl"] ?? 
     throw new Exception("ServiceUrl not found");
 
-string idToken = await GetIdTokenFromApplicationDefaultAsync(serviceUrl);
+// Get ID token 
+string idToken = await GetIdTokenAsync(serviceUrl);
 
+// Configure HTTP client
 builder.Services.AddHttpClient(SERVICE_CLIENT, client =>
 {
     client.BaseAddress = new Uri(serviceUrl);
@@ -17,6 +20,7 @@ builder.Services.AddHttpClient(SERVICE_CLIENT, client =>
 
 var app = builder.Build();
 
+// Define the route
 app.MapGet("/", async (IHttpClientFactory clientFactory) => 
 {
     var client = clientFactory.CreateClient(SERVICE_CLIENT);
@@ -36,18 +40,17 @@ app.Run();
 /// <summary>
 /// Gets an ID token from Application Default Credentials.
 /// </summary>
-static async Task<string> GetIdTokenFromApplicationDefaultAsync(string url, CancellationToken cancellationToken = default)
+static async Task<string> GetIdTokenAsync(string url)
 {
     // Get default Google credential
-    var credential = await GoogleCredential.GetApplicationDefaultAsync(cancellationToken)
+    var credential = await GoogleCredential.GetApplicationDefaultAsync()
         .ConfigureAwait(false);
 
-    var token = await credential.GetOidcTokenAsync(OidcTokenOptions.FromTargetAudience(url), cancellationToken)
+    var token = await credential.GetOidcTokenAsync(OidcTokenOptions.FromTargetAudience(url))
         .ConfigureAwait(false);
 
     // Despite the method being called AccessToken this is an IdToken
-    var idToken = await token.GetAccessTokenAsync(cancellationToken)
-        .ConfigureAwait(false);
+    var idToken = await token.GetAccessTokenAsync().ConfigureAwait(false);
 
     return idToken;
 }
