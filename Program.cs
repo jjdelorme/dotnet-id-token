@@ -38,7 +38,7 @@ app.MapGet("/", async (IHttpClientFactory clientFactory) =>
 
     string content = await response.Content.ReadAsStringAsync();    
     
-    return Results.Ok($"The response was: {content}");    
+    return Results.Ok($"The response was: {content} at {DateTime.Now.ToString("s")}");
 });
 
 app.Run();
