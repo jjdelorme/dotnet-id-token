@@ -1,4 +1,5 @@
-﻿using Google.Apis.Auth.OAuth2;
+﻿using System.Net.Http.Headers;
+using Google.Apis.Auth.OAuth2;
 
 const string SERVICE_CLIENT = "ServiceClient";
 
@@ -26,7 +27,7 @@ app.MapGet("/", async (IHttpClientFactory clientFactory) =>
     var idToken = await token.GetAccessTokenAsync().ConfigureAwait(false);
 
     var client = clientFactory.CreateClient(SERVICE_CLIENT);
-    client.DefaultRequestHeaders.Add("Authorization", $"Bearer {idToken}");
+    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", idToken);
 
     using var response = await client.GetAsync("/ping");
     
