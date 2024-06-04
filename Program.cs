@@ -28,7 +28,7 @@ app.MapGet("/", async (IHttpClientFactory clientFactory) =>
     
     if (!response.IsSuccessStatusCode)
     { 
-        return Results.BadRequest($"The response was: {response.ReasonPhrase}");
+        return Results.BadRequest($"Error: {response.ReasonPhrase}");
     }
 
     string content = await response.Content.ReadAsStringAsync();    
