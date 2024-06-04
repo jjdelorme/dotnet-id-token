@@ -7,7 +7,7 @@ This Google C# sample demonstrates authenticated service to service calls using 
 This repo is setup with 2 branches to follow along:
 
 * `main` is the completed application with authentiation
-* `start` represents the simple application before adding the authentication
+* `unauthenticated` represents the simple application before adding the authentication
 
 ## Deploy "Service B"
 
