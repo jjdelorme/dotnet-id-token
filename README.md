@@ -19,7 +19,13 @@ gcloud run deploy helloworld --image testcontainers/helloworld --region us-centr
 
 ## App Settings
 
-Add the following entry to your `appsettings.json` file for the location of Service B.
+If you need to retrieve the URL of your `helloworld` service, run the following command:
+
+```bash
+gcloud run services describe helloworld --format='value(status.url)'
+```
+
+Add the following entry to your `appsettings.json` file for the location of Service B. 
 
 ```json
   {
