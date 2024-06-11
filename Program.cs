@@ -23,6 +23,7 @@ var app = builder.Build();
 // Define the route
 app.MapGet("/", async (IHttpClientFactory clientFactory) => 
 {
+    // Calling GetAccessTokenAsync handles token refresh automatically when you call
     // Despite the method being called AccessToken this is an IdToken
     var idToken = await token.GetAccessTokenAsync().ConfigureAwait(false);
 
@@ -46,10 +47,6 @@ app.Run();
 /// <summary>
 /// Gets a token from Application Default Credentials.
 /// </summary>
-/// <remarks>
-/// The GoogleCredential class handles token refresh automatically when you call 
-/// GetOidcTokenAsync again. You don't need to manually manage the refresh process.
-/// </remarks>
 static async Task<OidcToken> GetIdTokenAsync(string url)
 {
     // Get default Google credential
